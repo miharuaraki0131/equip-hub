@@ -16,8 +16,11 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
+        // 備品カテゴリのサンプルを用意
+        $categories = ['ノートPC', 'モニター', 'キーボード', 'マウス', 'Webカメラ', 'ソフトウェアライセンス', '書籍','CD/DVD'];
+
         return [
-            //
+            'name' => $this->faker->unique()->randomElement($categories),
         ];
     }
 }

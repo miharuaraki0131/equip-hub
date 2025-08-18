@@ -47,13 +47,17 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean',
+            'is_admin' => 'boolean', // 管理者かどうか
         ];
     }
 
-    // リレーション
+    /*
+    |--------------------------------------------------------------------------
+    | リレーションシップ
+    |--------------------------------------------------------------------------
+    */
 
-    
+
     /**
      *  ユーザーが所属する部署(1つ)
      */
@@ -76,7 +80,7 @@ class User extends Authenticatable
      */
     public function approvalFlows(): HasMany
     {
+        //  user_id ではなく、approver_idで規約とは外れるので第二引数が必要
         return $this->hasMany(ApprovalFlow::class, 'approver_id');
     }
-
 }

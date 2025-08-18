@@ -23,8 +23,8 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories'); // 機器のカテゴリID
             $table->foreignId('division_id')->nullable()->constrained('divisions'); // 機器の所属部門ID
 
-            $table->softDeletes(); // 論理削除用カラム
             $table->timestamps();
+            $table->softDeletes(); // 論理削除用カラム
         });
     }
 
