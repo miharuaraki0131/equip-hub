@@ -65,18 +65,4 @@ class Reservation extends Model
     {
         return $this->belongsTo(Equipment::class);
     }
-
-    /**
-     * この予約に紐づく承認フローを取得 (ポリモーフィックな1対1)
-     * @return \Illuminate\Database\Eloquent\Relations\MorphOne
-     */
-
-
-    public function approvalFlow(): MorphOne
-    {
-        // 第1引数: 関連するモデル
-        // 第2引数: ポリモーフィック接頭辞 ('source')　source_modelとsource_idを見に行く
-        // モデルとidがあることによって一意になる（）
-        return $this->morphOne(ApprovalFlow::class, 'source');
-    }
 }

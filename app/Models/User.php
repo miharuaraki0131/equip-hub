@@ -83,4 +83,13 @@ class User extends Authenticatable
         //  user_id ではなく、approver_idで規約とは外れるので第二引数が必要
         return $this->hasMany(ApprovalFlow::class, 'approver_id');
     }
+
+
+    /**
+     * このユーザーが行った変更申請の一覧（複数）
+     */
+    public function changeRequests(): HasMany
+    {
+        return $this->hasMany(ChangeRequest::class);
+    }
 }

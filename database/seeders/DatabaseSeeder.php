@@ -4,13 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\ApprovalFlow;
 use App\Models\Category;
+use App\Models\ChangeRequest;
 use App\Models\Division;
 use App\Models\Equipment;
 use App\Models\Reservation;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; // ★追加: トランザクションのためにインポート
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,52 +18,57 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // ----------------------------------------------------------------
-        // ① 依存関係のないマスタデータを作成 (外部キーをもたない)
-        // ----------------------------------------------------------------
-        $this->command->info('Seeding master data...');
-
+        // ----- 1. 基礎マスタとユーザーの作成 -----
+        $this->command->info('Seeding master data & users...');
         Division::factory(7)->create();
         Category::factory(7)->create();
-
-
-        // ----------------------------------------------------------------
-        // ② ユーザーを作成　（division_idは外部キー）
-        // ----------------------------------------------------------------
-        $this->command->info('Seeding users...');
-
-        // 1. まずは、必ず存在する管理者ユーザーを1名作成する
         User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'is_admin' => true,
         ]);
-
-        // 2. 一般ユーザーを20名作成する
         User::factory(20)->create();
 
 
-        // ----------------------------------------------------------------
-        // ③ 備品を作成　(category_idとdivision_idは外部キー)
-        // ----------------------------------------------------------------
-        $this->command->info('Seeding equipments...');
 
+        // ----- 2. 現在の備品状況（確定済みデータ）の作成 -----
+        $this->command->info('Seeding current equipments & reservations...');
         Equipment::factory(50)->create();
+        Reservation::factory(100)->create(); // 過去の貸出履歴を100件作成
 
+        
 
-        // ----------------------------------------------------------------
-        // ④ 予約と、それに紐づく承認フローを作成
-        // ----------------------------------------------------------------
-        $this->command->info('Seeding reservations and approval flows...');
-
-        // 30件の予約を作成
-        Reservation::factory(30)->create()->each(function ($reservation) {
-            // ★ポリモーフィックリレーションのSeeding！
-            // 作成された予約($reservation)一件ごとに、
-            // それに紐づくApprovalFlowを1件作成する
-            ApprovalFlow::factory()->create([
-                'source_model' => Reservation::class, // どのモデルか
-                'source_id' => $reservation->id,      // そのモデルのどのIDか
+        // ----- 3. 備品登録申請（承認待ち）のダミーデータ作成 -----
+        $this->command->info('Seeding pending equipment-create requests...');
+        ChangeRequest::factory(5)->make([ // make()でメモリ上にのみインスタンスを作成
+            'target_model' => Equipment::class,
+            'target_id' => null,
+            'type' => 'create',
+            'payload_before' => null,
+            'payload_after' => fn() => Equipment::factory()->make()->toArray(),
+        ])->each(function ($cr) {
+            $cr->save(); // まずChangeRequestを保存
+            ApprovalFlow::factory()->create([ // 次にそれに紐づく承認フローを作成
+                'source_model' => ChangeRequest::class,
+                'source_id' => $cr->id,
+                'status' => 10, // 承認待ち
+            ]);
+        });
+        
+        // ----- 4. 備品編集申請（承認済み）のダミーデータ作成 -----
+        $this->command->info('Seeding approved equipment-update requests...');
+        $targetEquipment = Equipment::inRandomOrder()->first();
+        ChangeRequest::factory(3)->make([
+            'target_model' => Equipment::class,
+            'target_id' => $targetEquipment->id,
+            'type' => 'update',
+            'payload_before' => ['status' => $targetEquipment->status],
+            'payload_after' => ['status' => 30], // 修理中(30)にする申請
+        ])->each(function ($cr) {
+            $cr->save();
+            ApprovalFlow::factory()->approved()->create([ // 承認済みの状態
+                'source_model' => ChangeRequest::class,
+                'source_id' => $cr->id,
             ]);
         });
     }

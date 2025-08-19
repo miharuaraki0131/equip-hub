@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes; // ★追加: 論理削除のためにインポート
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Equipment extends Model
 {
@@ -69,5 +70,15 @@ class Equipment extends Model
     public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    
+    /**
+     * この備品に関連する変更申請の一覧を取得 (ポリモーフィックな1対多)
+     */
+    public function changeRequests(): MorphMany
+    {
+        // 'target_model', 'target_id' を見て ChangeRequest と繋がる
+        return $this->morphMany(ChangeRequest::class, 'target');
     }
 }

@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->date('start_date'); // 予約開始日
             $table->date('end_date');   // 予約終了日
-            $table->integer('status')->default(10)->comment('10:申請中, 20:承認済, 30:貸出中, 40:返却済, 90:却下');
+            $table->integer('status')->default(20)->comment('20:承認済, 30:貸出中, 40:返却済');
 
             $table->dateTime('rented_at')->nullable(); //実際に貸出された日時 (最初はnull)
             $table->dateTime('returned_at')->nullable(); // 実際に返却された日時 (最初はnull)

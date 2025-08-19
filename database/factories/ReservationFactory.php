@@ -19,24 +19,26 @@ class ReservationFactory extends Factory
      */
     public function definition(): array
     {
-        // 予約期間をランダムに生成
-        $startDate = Carbon::instance($this->faker->dateTimeBetween('-1 month', '+1 month'));
+        // 予約期間を過去の日付でランダムに生成
+        $startDate = Carbon::instance($this->faker->dateTimeBetween('-1 year', '-1 week'));
         $endDate = (clone $startDate)->addDays($this->faker->numberBetween(1, 14));
 
         // 状態（status）のサンプル
-        $statuses = [10, 20, 30, 40, 90]; // 10:申請中, 20:承認済, 30:貸出中, 40:返却済, 90:却下
+        $statuses = [30, 40]; //  30:貸出中, 40:返却済
 
         return [
-            // 外部キーは、既存のUserとEquipmentからランダムに取得
             'user_id' => User::inRandomOrder()->first()->id,
             'equipment_id' => Equipment::inRandomOrder()->first()->id,
-
-            'start_date' => $startDate->toDateString(), // Y-m-d 形式
-            'end_date' => $endDate->toDateString(),     // Y-m-d 形式
-
+            'start_date' => $startDate->toDateString(),
+            'end_date' => $endDate->toDateString(),
             'status' => $this->faker->randomElement($statuses),
-            'rented_at' => null,
-            'returned_at' => null,
+
+            // statusに応じて、貸出・返却日時を設定
+            'rented_at' => $startDate->addHours($this->faker->numberBetween(9, 17)),
+            'returned_at' => $this->faker->randomElement([
+                null, // 貸出中の場合はnull
+                (clone $endDate)->addHours($this->faker->numberBetween(9, 17))
+            ]),
         ];
     }
 }
