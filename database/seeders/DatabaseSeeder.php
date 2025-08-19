@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         Equipment::factory(50)->create();
         Reservation::factory(100)->create(); // 過去の貸出履歴を100件作成
 
-        
+
 
         // ----- 3. 備品登録申請（承認待ち）のダミーデータ作成 -----
         $this->command->info('Seeding pending equipment-create requests...');
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 10, // 承認待ち
             ]);
         });
-        
+
         // ----- 4. 備品編集申請（承認済み）のダミーデータ作成 -----
         $this->command->info('Seeding approved equipment-update requests...');
         $targetEquipment = Equipment::inRandomOrder()->first();
@@ -66,7 +66,9 @@ class DatabaseSeeder extends Seeder
             'payload_after' => ['status' => 30], // 修理中(30)にする申請
         ])->each(function ($cr) {
             $cr->save();
-            ApprovalFlow::factory()->approved()->create([ // 承認済みの状態
+            ApprovalFlow::factory()->create([
+                // ★追加: statusを「承認済み」で上書きする
+                'status' => 20, // 20:承認済
                 'source_model' => ChangeRequest::class,
                 'source_id' => $cr->id,
             ]);

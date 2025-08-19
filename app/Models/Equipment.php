@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Equipment extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $table = 'equipments';
+
+
     /**
      * The attributes that are mass assignable.
      *
@@ -72,7 +76,7 @@ class Equipment extends Model
         return $this->hasMany(Reservation::class);
     }
 
-    
+
     /**
      * この備品に関連する変更申請の一覧を取得 (ポリモーフィックな1対多)
      */
