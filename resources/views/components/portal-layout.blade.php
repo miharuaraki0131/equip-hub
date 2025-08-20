@@ -11,67 +11,13 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
-    {{-- TailwindCSSのPlay CDNは開発用。本番ではViteを使います --}}
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    {{-- ★★★ 全てのJSとCSSは、この一行が管理する！ ★★★ --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <style type="text/tailwindcss">
-        :root {
-            --primary-color: #0d7ff2;
-            --secondary-color: #6c757d;
-            --background-light: #f8f9fa;
-            --text-dark: #212529;
-            --text-light: #6c757d;
-            --card-bg: #ffffff;
-            --border-color: #dee2e6;
-        }
 
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-
-        .btn-primary {
-            @apply bg-[var(--primary-color)] hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 min-w-0 text-sm;
-        }
-
-        .btn-secondary {
-            @apply bg-white border border-[var(--border-color)] hover:bg-gray-100 text-[var(--text-dark)] font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 min-w-0 text-sm;
-        }
-
-        .input-search {
-            @apply bg-white/20 text-white placeholder-white/70 rounded-full py-2 focus:outline-none focus:ring-2 focus:ring-white transition w-64;
-        }
-
-        .input-search:focus {
-            @apply bg-white/30;
-        }
-
-        /* ヘッダーの背景グラデーション改善 */
-        .header-gradient {
-            background: linear-gradient(135deg, rgba(13, 127, 242, 0.9) 0%, rgba(16, 185, 129, 0.8) 100%);
-        }
-
-        /* カードのホバーエフェクト強化 */
-        .card-hover {
-            @apply hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
-        }
-
-        /* レスポンシブなボタン調整 */
-        @media (max-width: 640px) {
-
-            .btn-primary,
-            .btn-secondary {
-                @apply py-3 px-4 text-sm;
-            }
-        }
-    </style>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    {{-- Chart.jsをUMD版で読み込み --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 </head>
 
 <body class="bg-[var(--background-light)] text-[var(--text-dark)]">
