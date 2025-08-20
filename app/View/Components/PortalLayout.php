@@ -11,9 +11,12 @@ class PortalLayout extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct()
-    {
-        //
+    public function __construct(
+        public bool $showHero = false,
+        public bool $showHeroButtons = false,
+        public ?string $heroTitle = null,
+        public ?string $heroSubtitle = null,
+    ) {
     }
 
     /**
