@@ -42,7 +42,7 @@
         }
 
         .input-search {
-            @apply bg-white/20 text-white placeholder-white/70 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 w-64 backdrop-blur-sm;
+            @apply bg-white/20 text-white placeholder-white/70 rounded-full py-2 focus:outline-none focus:ring-2 focus:ring-white transition w-64;
         }
 
         .input-search:focus {
