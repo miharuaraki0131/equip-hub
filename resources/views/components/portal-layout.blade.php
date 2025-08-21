@@ -11,10 +11,10 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
 
     <!-- Scripts -->
-    {{-- ★★★ 全てのJSとCSSは、この一行が管理する！ ★★★ --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 
@@ -35,7 +35,12 @@
                 @include('layouts.portal-navigation')
                 {{-- ヒーローセクション（条件付きで表示） --}}
                 @if (isset($showHero) && $showHero)
-                    <div class="flex flex-col items-center justify-center min-h-64 text-center px-4 py-16 text-white">
+                    <div @class([
+                        'flex flex-col items-center justify-center text-center px-4 text-white',
+                        // --- 余白に関するクラス ---
+                        'pt-3 pb-8' => isset($showHeroButtons) && $showHeroButtons, // ボタンあり: 上下の余白を大きく
+                        'py-1' => !(isset($showHeroButtons) && $showHeroButtons), // ボタンなし: 上下の余白を少し詰める
+                    ])>
                         <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                             {{ $heroTitle ?? '備品をスマートに管理' }}
                         </h1>

@@ -81,7 +81,7 @@
                                         <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
                                     </form>
                                     <a href="{{ route('reservations.create', $equipment) }}"
-                                        class="text-[var(--primary-color)] hover:text-blue-700">予約</a>
+                                        class="text-[var(--primary-color)] hover:text-blue-700">予約する</a>
                                 </div>
                             </td>
                         </tr>
