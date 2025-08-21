@@ -29,4 +29,20 @@ class EquipmentRequest extends FormRequest
             'image'       => 'nullable|image|max:2048', // 画像は任意で、最大サイズは2MB
         ];
     }
+
+    /**
+     * バリデーションエラーのカスタム属性名を定義
+     *
+     * @return array
+     */
+    public function attributes(): array
+    {
+        return [
+            'name'        => '備品名',
+            'category_id' => 'カテゴリ',
+            'division_id' => '管理部署',
+            'description' => '詳細説明',
+            'image'       => '備品画像',
+        ];
+    }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Equipment;
 use App\Http\Requests\EquipmentRequest;
+use App\Models\Category;
+use App\Models\Division;
+
 
 class EquipmentController extends Controller
 {
@@ -23,7 +26,9 @@ class EquipmentController extends Controller
      */
     public function create()
     {
-        return view('equipments.create');
+        $categories = Category::all();
+        $divisions = Division::all();
+        return view('equipments.create', compact('categories', 'divisions'));
     }
 
     /**
@@ -32,7 +37,7 @@ class EquipmentController extends Controller
     public function store(EquipmentRequest $request)
     {
         $validated = $request->validated();
-         // ファイルアップロード処理
+        // ファイルアップロード処理
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('equipments', 'public');
             $validated['image_path'] = $path;
@@ -59,7 +64,9 @@ class EquipmentController extends Controller
      */
     public function edit(Equipment $equipment)
     {
-        return view('equipments.edit', compact('equipment'));
+        $categories = Category::all();
+        $divisions = Division::all();
+        return view('equipments.edit', compact('equipment', 'categories', 'divisions'));
     }
 
     /**

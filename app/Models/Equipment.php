@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Equipment extends Model
 {
@@ -84,5 +85,23 @@ class Equipment extends Model
     {
         // 'target_model', 'target_id' を見て ChangeRequest と繋がる
         return $this->morphMany(ChangeRequest::class, 'target');
+    }
+
+    /**
+     * ステータスを数字から日本語に変換する
+     *
+     * @return \Illuminate\Database\Eloquent\Concerns\HasAttributes
+     */
+    protected function statusText(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => match ($this->status) {
+                10 => '利用可能',
+                20 => '貸出中',
+                30 => '修理中',
+                99 => '廃棄済',
+                default => '不明',
+            },
+        );
     }
 }

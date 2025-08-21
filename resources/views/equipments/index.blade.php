@@ -59,7 +59,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach ($equipments as $equipment)
-                        <tr>
+                        <tr class="hover:bg-gray-100 transition-colors duration-100">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $equipment->id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {{ $equipment->name }}</td>
@@ -67,7 +67,8 @@
                                 {{ $equipment->category->name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ $equipment->division->name ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $equipment->status }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $equipment->status_text }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end items-center gap-4">
                                     <a href="{{ route('equipments.edit', $equipment) }}"
@@ -79,6 +80,8 @@
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
                                     </form>
+                                    <a href="{{ route('reservations.create', $equipment) }}"
+                                        class="text-[var(--primary-color)] hover:text-blue-700">予約</a>
                                 </div>
                             </td>
                         </tr>

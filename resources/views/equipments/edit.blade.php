@@ -19,6 +19,9 @@
                             placeholder="例：MacBook Pro 14 inch">
 
                     </div>
+                    @error('name')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- カテゴリ --}}
@@ -29,11 +32,17 @@
                         <select id="category_id" name="category_id" required
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                             <option value="">選択してください</option>
-                            <option value="1" @selected(old('category_id', $equipment->category_id) == 1)>ノートPC</option>
-                            <option value="2" @selected(old('category_id', $equipment->category_id) == 2)>モニター</option>
-                            <option value="3" @selected(old('category_id', $equipment->category_id) == 3)>キーボード</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}"
+                                    @if (isset($equipment)) @selected(old('category_id', $equipment->category_id) == $category->id) @endif>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
+                    @error('category_id')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- 管理部署 --}}
@@ -43,10 +52,17 @@
                         <select id="division_id" name="division_id"
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                             <option value="">選択してください</option>
-                            <option value="1" @selected(old('division_id', $equipment->division_id) == 1)>総務部</option>
-                            <option value="6" @selected(old('division_id', $equipment->division_id) == 6)>開発部</option>
+                            @foreach ($divisions as $division)
+                                <option value="{{ $division->id }}"
+                                    @if (isset($equipment)) @selected(old('division_id', $equipment->division_id) == $division->id) @endif>
+                                    {{ $division->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
+                    @error('division_id')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- 詳細説明 --}}
@@ -55,10 +71,11 @@
                     <div class="mt-1">
                         <textarea id="description" name="description" rows="4"
                             class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                            placeholder="スペック、注意事項などを入力">
-                            {{ old('description', $equipment->description) }}
-                        </textarea>
+                            placeholder="スペック、注意事項などを入力">{{ old('description', $equipment->description) }}</textarea>
                     </div>
+                    @error('description')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- 画像アップロード --}}
@@ -71,14 +88,17 @@
                         </div>
                     @endif
                     <input type="file" name="image" id="image" class="...">
-                    <p class="text-xs text-gray-500 mt-1">新しい画像をアップロードすると、既存の画像は上書きされます。</p>
+                    <p class="text-xs text-gray-500 mt-1 ">新しい画像をアップロードすると、既存の画像は上書きされます。</p>
+                    @error('image')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
             </div>
 
             {{-- 更新ボタン --}}
 
-            <button type="submit" class="btn-primary">
+            <button type="submit" class="btn-primary mt-4">
                 更新する
             </button>
     </div>
