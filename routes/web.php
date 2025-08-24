@@ -28,8 +28,10 @@ Route::middleware('auth')->group(function () {
     // 予約のCRUD (createを除く)
     Route::resource('reservations', ReservationController::class)->except(['create']);
 
+    // マイ予約一覧
+    Route::get('/my/reservations', [ReservationController::class, 'myIndex'])->name('my.reservations.index');
 });
 
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

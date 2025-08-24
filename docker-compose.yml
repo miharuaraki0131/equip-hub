@@ -101,6 +101,18 @@ services:
             - '/dev/shm:/dev/shm'
         networks:
             - sail
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - '8081:80' # ホストPCの8081番ポートを、phpMyAdminコンテナの80番ポートに繋ぐ
+        environment:
+            PMA_HOST: mysql # 接続先のホスト名は「mysql」サービスを指定
+            PMA_PORT: 3306  # mysqlコンテナの内部ポートを指定
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}' # .envファイルからパスワードを読み込む
+        networks:
+            - sail
+        depends_on:
+            - mysql # mysqlサービスが起動してからphpmyadminを起動させる
 networks:
     sail:
         driver: bridge

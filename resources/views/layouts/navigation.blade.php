@@ -16,8 +16,6 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    {{-- ★ここから追加 --}}
-
                     <!-- 備品一覧へのリンク (全ユーザー向け) -->
                     <x-nav-link :href="route('equipments.index')" :active="request()->routeIs('equipments.*')">
                         {{ __('備品一覧') }}

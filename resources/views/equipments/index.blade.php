@@ -11,15 +11,6 @@
                 備品一覧
             </h1>
 
-            @if (session('success'))
-                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
-                    x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0"
-                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
-                    role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
 
             {{-- 新規登録ボタン --}}
             <a href="{{ route('equipments.create') }}" class="btn-primary w-full sm:w-auto">
@@ -81,7 +72,7 @@
                                         <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
                                     </form>
                                     <a href="{{ route('reservations.create', $equipment) }}"
-                                        class="text-[var(--primary-color)] hover:text-blue-700">予約する</a>
+                                        class="text-[var(--primary-color)] hover:text-blue-700" >予約する</a>
                                 </div>
                             </td>
                         </tr>
