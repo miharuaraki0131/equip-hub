@@ -15,7 +15,7 @@
         {{-- 申請一覧テーブル --}}
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg--50">
                     <tr>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -36,10 +36,6 @@
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             希望利用期間
-                        </th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            ステータス
                         </th>
                         <th scope="col" class="relative px-6 py-3">
                             <span class="sr-only">操作</span>
@@ -68,10 +64,6 @@
                                     $payload = json_decode($changeRequest->payload_after, true);
                                 @endphp
                                 {{ $payload['start_date'] ?? 'N/A' }} ~ {{ $payload['end_date'] ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                {{-- status_badgeアクセサでステータス表示を生成 (要モデル修正) --}}
-                                {!! $changeRequest->status_badge !!}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {{-- 将来的に「申請取り消し」ボタンなどをここに設置 --}}

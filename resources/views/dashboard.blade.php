@@ -11,10 +11,12 @@
 
             {{-- サマリーカードエリア --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+
                 {{-- 承認待ちカード --}}
-                <div
-                    class="bg-[var(--card-bg)] p-6 rounded-xl shadow-md flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                    <div class="bg-yellow-100 p-3 rounded-full flex-shrink-0">
+                <a href="{{ route('admin.approvals.index') }}"
+                    class="bg-white p-6 rounded-xl shadow-md flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="bg-yellow-100 p-3 rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                         <svg class="h-8 w-8 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
@@ -22,15 +24,16 @@
                         </svg>
                     </div>
                     <div class="min-w-0">
-                        <h3 class="text-lg font-bold text-[var(--text-dark)]">承認待ち</h3>
-                        <p class="text-2xl lg:text-3xl font-black text-[var(--primary-color)]">3件</p>
+                        <h3 class="text-lg font-bold text-gray-800">承認待ち</h3>
+                        <p class="text-2xl lg:text-3xl font-black text-yellow-600">{{$pendingApprovalsCount}}件</p>
                     </div>
-                </div>
+                </a>
 
                 {{-- 貸出中カード --}}
-                <div
-                    class="bg-[var(--card-bg)] p-6 rounded-xl shadow-md flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                    <div class="bg-blue-100 p-3 rounded-full flex-shrink-0">
+                <a href="{{ route('equipments.index', ['status' => 'rent']) }}" {{-- 将来的に貸出中一覧ページへのリンクを設定 --}}
+                    class="bg-white p-6 rounded-xl shadow-md flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="bg-blue-100 p-3 rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                         <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24">
                             <path
@@ -39,15 +42,16 @@
                         </svg>
                     </div>
                     <div class="min-w-0">
-                        <h3 class="text-lg font-bold text-[var(--text-dark)]">貸出中</h3>
-                        <p class="text-2xl lg:text-3xl font-black text-[var(--primary-color)]">5件</p>
+                        <h3 class="text-lg font-bold text-gray-800">貸出中</h3>
+                        <p class="text-2xl lg:text-3xl font-black text-blue-600">{{ $rentedEquipmentsCount }}件</p>
                     </div>
-                </div>
+                </a>
 
                 {{-- 利用可能カード --}}
-                <div
-                    class="bg-[var(--card-bg)] p-6 rounded-xl shadow-md flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                    <div class="bg-green-100 p-3 rounded-full flex-shrink-0">
+                <a href="{{ route('equipments.index', ['status' => 'available']) }}" {{-- 備品一覧ページへのリンク --}}
+                    class="bg-white p-6 rounded-xl shadow-md flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                    <div
+                        class="bg-green-100 p-3 rounded-full flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
                         <svg class="h-8 w-8 text-green-500" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24">
                             <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
@@ -55,10 +59,10 @@
                         </svg>
                     </div>
                     <div class="min-w-0">
-                        <h3 class="text-lg font-bold text-[var(--text-dark)]">利用可能</h3>
-                        <p class="text-2xl lg:text-3xl font-black text-[var(--primary-color)]">42件</p>
+                        <h3 class="text-lg font-bold text-gray-800">利用可能</h3>
+                        <p class="text-2xl lg:text-3xl font-black text-green-600">{{ $availableEquipmentsCount }}件</p>
                     </div>
-                </div>
+                </a>
             </div>
 
             {{-- 貸出中備品エリア --}}
@@ -174,77 +178,86 @@
     {{-- =============================================== --}}
     {{-- ページ固有のJavaScript --}}
     {{-- =============================================== --}}
-@push('scripts')
-<script>
-    // DOMが完全に読み込まれたら、グラフの初期化処理を実行する
-    document.addEventListener('DOMContentLoaded', function () {
+    @push('scripts')
+        <script>
+            // DOMが完全に読み込まれたら、グラフの初期化処理を実行する
+            document.addEventListener('DOMContentLoaded', function() {
 
-        // グラフの共通オプション
-        const commonOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                tooltip: {
-                    bodyFont: { family: 'Noto Sans JP' },
-                    titleFont: { family: 'Noto Sans JP' },
-                },
-            },
-        };
-
-        // 月別貸出トレンドグラフの初期化
-        const monthlyTrendElement = document.getElementById('monthlyTrendChart');
-        if (monthlyTrendElement) {
-            const monthlyTrendCtx = monthlyTrendElement.getContext('2d');
-            // 'Chart' は、app.js で window.Chart にセットされたものが使われる
-            new Chart(monthlyTrendCtx, {
-                type: 'line',
-                data: {
-                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
-                    datasets: [{
-                        label: '貸出件数',
-                        data: [12, 19, 15, 25, 22, 30],
-                        borderColor: '#0d7ff2',
-                        backgroundColor: 'rgba(13, 127, 242, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                    }],
-                },
-                options: {
-                    ...commonOptions,
-                    scales: {
-                        y: { beginAtZero: true, display: false, },
-                        x: { display: false, },
+                // グラフの共通オプション
+                const commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            bodyFont: {
+                                family: 'Noto Sans JP'
+                            },
+                            titleFont: {
+                                family: 'Noto Sans JP'
+                            },
+                        },
                     },
-                },
-            });
-        }
+                };
 
-        // カテゴリ別貸出比率グラフの初期化
-        const categoryElement = document.getElementById('categoryChart');
-        if (categoryElement) {
-            const categoryCtx = categoryElement.getContext('2d');
-            new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['PC', 'モニター', 'その他'],
-                    datasets: [{
-                        data: [40, 35, 25],
-                        backgroundColor: ['#0d7ff2', '#10b981', '#f59e0b'],
-                        borderWidth: 0,
-                    }],
-                },
-                options: {
-                    ...commonOptions,
-                    cutout: '60%',
-                },
+                // 月別貸出トレンドグラフの初期化
+                const monthlyTrendElement = document.getElementById('monthlyTrendChart');
+                if (monthlyTrendElement) {
+                    const monthlyTrendCtx = monthlyTrendElement.getContext('2d');
+                    // 'Chart' は、app.js で window.Chart にセットされたものが使われる
+                    new Chart(monthlyTrendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                            datasets: [{
+                                label: '貸出件数',
+                                data: [12, 19, 15, 25, 22, 30],
+                                borderColor: '#0d7ff2',
+                                backgroundColor: 'rgba(13, 127, 242, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                            }],
+                        },
+                        options: {
+                            ...commonOptions,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    display: false,
+                                },
+                                x: {
+                                    display: false,
+                                },
+                            },
+                        },
+                    });
+                }
+
+                // カテゴリ別貸出比率グラフの初期化
+                const categoryElement = document.getElementById('categoryChart');
+                if (categoryElement) {
+                    const categoryCtx = categoryElement.getContext('2d');
+                    new Chart(categoryCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['PC', 'モニター', 'その他'],
+                            datasets: [{
+                                data: [40, 35, 25],
+                                backgroundColor: ['#0d7ff2', '#10b981', '#f59e0b'],
+                                borderWidth: 0,
+                            }],
+                        },
+                        options: {
+                            ...commonOptions,
+                            cutout: '60%',
+                        },
+                    });
+                }
             });
-        }
-    });
-</script>
-@endpush
+        </script>
+    @endpush
 
 </x-portal-layout>

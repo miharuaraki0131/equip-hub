@@ -50,7 +50,7 @@
                         @if (isset($showHeroButtons) && $showHeroButtons)
                             <div
                                 class="flex flex-col sm:flex-row gap-4 w-full max-w-md sm:max-w-none justify-center items-center">
-                                <a class="btn-primary w-full sm:w-auto" href="#">
+                                <a class="btn-primary w-full sm:w-auto" href="{{ route('equipments.index', ['status' => 'available']) }}">
                                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path clip-rule="evenodd"
@@ -59,7 +59,7 @@
                                     </svg>
                                     備品を予約する
                                 </a>
-                                <a class="btn-secondary w-full sm:w-auto" href="#">
+                                <a class="btn-secondary w-full sm:w-auto" href="{{ route('my.reservations.index') }}">
                                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>

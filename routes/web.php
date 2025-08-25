@@ -5,14 +5,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Admin\ApprovalController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 // 認証済みユーザーのみアクセス可能
 Route::middleware('auth')->group(function () {
@@ -33,11 +33,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/my/reservations', [ReservationController::class, 'myIndex'])->name('my.reservations.index');
 
     // ▼▼▼ 管理者向け機能 ▼▼▼
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin/approvals')->name('admin.approvals.')->group(function () {
         // 承認待ち一覧
-        Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+        Route::get('/', [ApprovalController::class, 'index'])->name('index');
         // 詳細画面
-        Route::get('/approvals/{change_request}', [ApprovalController::class, 'show'])->name('approvals.show');
+        Route::get('/{change_request}', [ApprovalController::class, 'show'])->name('show');
+
+        // 承認処理
+        Route::post('/{change_request}/approve', [App\Http\Controllers\Admin\ApprovalController::class, 'approve'])->name('approve');
+        // 却下処理
+        Route::post('/{change_request}/reject', [App\Http\Controllers\Admin\ApprovalController::class, 'reject'])->name('reject');
     });
 });
 

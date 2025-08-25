@@ -19,6 +19,7 @@ class ChangeRequest extends Model
         'type',
         'payload_before',
         'payload_after',
+        'status',
     ];
 
     // 常に読み込むリレーション (N+1問題対策)

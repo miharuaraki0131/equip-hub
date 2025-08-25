@@ -14,10 +14,26 @@ class EquipmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // ▼▼▼ 引数に Request $request を追加 ▼▼▼
+    public function index(Request $request)
     {
-        // Equipmentsを取得するときにCategoryとDivisionを一緒に取得（N+1問題回避）
-        $equipments = Equipment::with('category', 'division')->latest()->paginate(10); // paginateで全件取得回避
+        // 1. ベースとなるクエリビルダを準備する
+        //    (これまで通り、N+1問題対策の with() もここに入れる)
+        $query = Equipment::with('category', 'division');
+
+        // 2. もしURLに 'status=available' が付いていたら、絞り込み条件を追加する
+        if ($request->query('status') === 'available') {
+            // statusカラムが 10 (利用可) のものだけに絞り込む
+            $query->where('status', 10);
+        }elseif ($request->query('status') === 'rent') {
+            // statusカラムが 20 (貸出中) のものだけに絞り込む
+            $query->where('status', 20);
+        }
+
+        // 3. 最終的なクエリに対して、並び順とページネーションを適用して、データを取得する
+        $equipments = $query->latest()->paginate(10);
+
+        // 4. ビューにデータを渡す
         return view('equipments.index', compact('equipments'));
     }
 
