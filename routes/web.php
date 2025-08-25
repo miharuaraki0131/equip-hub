@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\Admin\ApprovalController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +31,14 @@ Route::middleware('auth')->group(function () {
 
     // マイ予約一覧
     Route::get('/my/reservations', [ReservationController::class, 'myIndex'])->name('my.reservations.index');
+
+    // ▼▼▼ 管理者向け機能 ▼▼▼
+    Route::prefix('admin')->name('admin.')->group(function () {
+        // 承認待ち一覧
+        Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+        // 詳細画面
+        Route::get('/approvals/{change_request}', [ApprovalController::class, 'show'])->name('approvals.show');
+    });
 });
 
 

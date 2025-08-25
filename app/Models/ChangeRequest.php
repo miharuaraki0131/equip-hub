@@ -21,6 +21,10 @@ class ChangeRequest extends Model
         'payload_after',
     ];
 
+    // 常に読み込むリレーション (N+1問題対策)
+    protected $with = ['user', 'targetable'];
+
+
     /**
      * The attributes that should be cast.
      *
@@ -52,10 +56,11 @@ class ChangeRequest extends Model
     /**
      * この申請の対象となるモデル（Equipmentなど）を取得 (ポリモーフィック)
      */
-    public function target(): MorphTo
+    public function targetable(): MorphTo // ← メソッド名を targetable に変更
     {
-        // 'target_model', 'target_id' カラムを見て、関連モデルを動的に取得
-        return $this->morphTo();
+        // 第1引数に関係名を指定し、
+        // 第2引数で *_type カラム名、第3引数で *_id カラム名を明示する
+        return $this->morphTo('targetable', 'target_model', 'target_id');
     }
 
     /**
