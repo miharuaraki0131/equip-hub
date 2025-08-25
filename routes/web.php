@@ -6,6 +6,7 @@ use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Admin\ApprovalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,19 +34,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/my/reservations', [ReservationController::class, 'myIndex'])->name('my.reservations.index');
 
     // ▼▼▼ 管理者向け機能 ▼▼▼
-    Route::prefix('admin/approvals')->name('admin.approvals.')->group(function () {
-        // 承認待ち一覧
-        Route::get('/', [ApprovalController::class, 'index'])->name('index');
-        // 詳細画面
-        Route::get('/{change_request}', [ApprovalController::class, 'show'])->name('show');
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('users', UserController::class);
 
-        // 承認処理
-        Route::post('/{change_request}/approve', [App\Http\Controllers\Admin\ApprovalController::class, 'approve'])->name('approve');
-        // 却下処理
-        Route::post('/{change_request}/reject', [App\Http\Controllers\Admin\ApprovalController::class, 'reject'])->name('reject');
+        Route::prefix('approvals')->name('approvals.')->group(function () {
+            Route::get('/', [ApprovalController::class, 'index'])->name('index');
+            // 詳細画面
+            Route::get('/{change_request}', [ApprovalController::class, 'show'])->name('show');
+
+            // 承認処理
+            Route::post('/{change_request}/approve', [App\Http\Controllers\Admin\ApprovalController::class, 'approve'])->name('approve');
+            // 却下処理
+            Route::post('/{change_request}/reject', [App\Http\Controllers\Admin\ApprovalController::class, 'reject'])->name('reject');
+        });
     });
 });
-
 
 
 require __DIR__ . '/auth.php';

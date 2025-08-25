@@ -13,7 +13,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        // 部署(division)の情報も一緒に取得 (N+1問題対策)
+        $users = User::with('division')->latest()->paginate(15);
+
+        return view('admin.users.index', compact('users'));
     }
 
     /**
@@ -35,9 +38,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+     public function show(User $user)
     {
-        //
+        // 取得したUserオブジェクトをビューに渡すだけ
+        return view('admin.users.show', compact('user'));
     }
 
     /**
