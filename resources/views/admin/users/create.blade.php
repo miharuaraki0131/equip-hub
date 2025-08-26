@@ -7,7 +7,7 @@
 
             <div class="space-y-6">
 
-                {{-- 備品名 --}}
+                {{-- 氏名 --}}
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">氏名 <span
                             class="text-red-500">*</span></label>

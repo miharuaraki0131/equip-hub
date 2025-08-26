@@ -26,38 +26,42 @@
         {{-- ヘッダー：これは全てのページで共通 --}}
         {{-- =============================================== --}}
         <header class="relative text-white">
-            <div class="absolute inset-0 bg-cover bg-center"
-                style="background-image: url('{{ asset('images/header-background.jpg') }}');">
+
+            {{-- 背景レイヤー（welcomeページと完全に同一） --}}
+            <div class="absolute inset-0">
+                <img src="{{ asset('images/header-background.jpg') }}" alt="Header Background"
+                    class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/60"></div>
             </div>
-            <div class="absolute inset-0 header-gradient"></div>
+
+            {{-- コンテンツレイヤー --}}
             <div class="relative z-20">
+
                 {{-- ナビゲーション --}}
                 @include('layouts.portal-navigation')
+
                 {{-- ヒーローセクション（条件付きで表示） --}}
                 @if (isset($showHero) && $showHero)
-                    <div @class([
-                        'flex flex-col items-center justify-center text-center px-4 text-white',
-                        // --- 余白に関するクラス ---
-                        'pt-3 pb-8' => isset($showHeroButtons) && $showHeroButtons, // ボタンあり: 上下の余白を大きく
-                        'py-1' => !(isset($showHeroButtons) && $showHeroButtons), // ボタンなし: 上下の余白を少し詰める
-                    ])>
-                        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+                    <div class="container mx-auto px-6 py-12 md:py-20 text-center">
+                        <h1 class="text-3xl md:text-5xl font-bold mb-4">
                             {{ $heroTitle ?? '備品をスマートに管理' }}
                         </h1>
-                        <p class="text-base md:text-lg text-white/80 mb-8 max-w-2xl">
+                        <p class="text-base md:text-lg text-white/80 mb-8 max-w-2xl mx-auto">
                             {{ $heroSubtitle ?? '必要な備品をいつでも、どこからでも。EquipHubがあなたの仕事をサポートします。' }}
                         </p>
+
+                        {{-- ヒーローボタン（条件付きで表示） --}}
                         @if (isset($showHeroButtons) && $showHeroButtons)
-                            <div
-                                class="flex flex-col sm:flex-row gap-4 w-full max-w-md sm:max-w-none justify-center items-center">
-                                <a class="btn-primary w-full sm:w-auto" href="{{ route('equipments.index', ['status' => 'available']) }}">
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                <a class="btn-primary w-full sm:w-auto"
+                                    href="{{ route('equipments.index', ['status' => 'available']) }}">
                                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path clip-rule="evenodd"
                                             d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                                             fill-rule="evenodd"></path>
                                     </svg>
-                                    備品を予約する
+                                    <span>備品を予約する</span>
                                 </a>
                                 <a class="btn-secondary w-full sm:w-auto" href="{{ route('my.reservations.index') }}">
                                     <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"
@@ -67,7 +71,7 @@
                                             d="M4 5a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 011-1h6a1 1 0 110 2H8a1 1 0 01-1-1zm1 4a1 1 0 100 2h4a1 1 0 100-2H8z"
                                             fill-rule="evenodd"></path>
                                     </svg>
-                                    予約履歴を見る
+                                    <span>予約履歴を見る</span>
                                 </a>
                             </div>
                         @endif
@@ -150,8 +154,8 @@
             <a href="{{ route('profile.edit') }}"
                 class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span class="text-xs mt-1">プロフィール</span>
             </a>
