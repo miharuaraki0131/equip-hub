@@ -23,29 +23,26 @@ Route::middleware('auth')->group(function () {
 
     // resourceを使うことで index, create, store, show, edit, update, destroy を一括する
     Route::resource('equipments', EquipmentController::class);
-
     // 予約申請画面 (ルートモデルバインディングを有効にするため、パラメータ名を{equipment}にする)
     Route::get('/reservations/create/{equipment}', [ReservationController::class, 'create'])->name('reservations.create');
-
     // 予約のCRUD (createを除く)
     Route::resource('reservations', ReservationController::class)->except(['create']);
-
     // マイ予約一覧
     Route::get('/my/reservations', [ReservationController::class, 'myIndex'])->name('my.reservations.index');
 
+    
     // ▼▼▼ 管理者向け機能 ▼▼▼
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('can:admin-only')->group(function () {
         Route::resource('users', UserController::class);
 
         Route::prefix('approvals')->name('approvals.')->group(function () {
             Route::get('/', [ApprovalController::class, 'index'])->name('index');
             // 詳細画面
             Route::get('/{change_request}', [ApprovalController::class, 'show'])->name('show');
-
             // 承認処理
-            Route::post('/{change_request}/approve', [App\Http\Controllers\Admin\ApprovalController::class, 'approve'])->name('approve');
+            Route::post('/{change_request}/approve', [ApprovalController::class, 'approve'])->name('approve');
             // 却下処理
-            Route::post('/{change_request}/reject', [App\Http\Controllers\Admin\ApprovalController::class, 'reject'])->name('reject');
+            Route::post('/{change_request}/reject', [ApprovalController::class, 'reject'])->name('reject');
         });
     });
 });
