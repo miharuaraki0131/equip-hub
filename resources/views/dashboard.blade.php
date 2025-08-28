@@ -99,10 +99,11 @@
                             </div>
 
                             {{-- 詳細ページへのリンク --}}
-                            <a href="{{ route('equipments.show', $item->equipment) }}"
-                                class="btn-secondary-sm flex-shrink-0">
-                                詳細
-                            </a>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                {{-- 将来的に「申請取り消し」ボタンなどをここに設置 --}}
+                                {{-- <a href="{{ route('equipments.show', $item->equipment) }}"
+                                    class="px-3 py-1 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 transition-colors">詳細</a> --}}
+                            </td>
                         </div>
                     @empty
                         {{-- 貸出中の備品が1件もなかった場合の表示（元のコードと同じ） --}}

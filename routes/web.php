@@ -7,6 +7,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Admin\ApprovalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,10 +31,18 @@ Route::middleware('auth')->group(function () {
     // マイ予約一覧
     Route::get('/my/reservations', [ReservationController::class, 'myIndex'])->name('my.reservations.index');
 
-    
+
     // ▼▼▼ 管理者向け機能 ▼▼▼
     Route::prefix('admin')->name('admin.')->middleware('can:admin-only')->group(function () {
         Route::resource('users', UserController::class);
+
+
+        // 承認済み予約の一覧表示
+        Route::get('/reservations', [AdminReservationController::class, 'index'])->name('reservations.index');
+
+        // 貸出実行処理
+        Route::post('/reservations/{reservation}/lend', [AdminReservationController::class, 'lend'])->name('reservations.lend');
+
 
         Route::prefix('approvals')->name('approvals.')->group(function () {
             Route::get('/', [ApprovalController::class, 'index'])->name('index');

@@ -81,19 +81,6 @@
         </header>
 
         {{-- =============================================== --}}
-        {{-- フラッシュメッセージ：これは全てのページで共通 --}}
-        {{-- =============================================== --}}
-
-        @if (session('success'))
-            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
-                x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
-        @endif
-
-        {{-- =============================================== --}}
         {{-- メインコンテンツ：ここがページ毎に差し変わる！ --}}
         {{-- =============================================== --}}
         <main class="container mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8 flex-grow">
@@ -154,8 +141,8 @@
             <a href="{{ route('profile.edit') }}"
                 class="flex flex-col items-center p-2 text-[var(--text-light)] hover:text-[var(--primary-color)] transition-colors">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
                 <span class="text-xs mt-1">プロフィール</span>
             </a>

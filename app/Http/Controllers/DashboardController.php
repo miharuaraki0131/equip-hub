@@ -53,6 +53,7 @@ class DashboardController extends Controller
         $rentedItems = Reservation::with('equipment')
             ->where('user_id', Auth::id())
             ->where('status', 30)
+            ->whereHas('equipment') // 関連するequipmentレコードが（論理削除されずに）存在する場合にのみ取得
             ->orderBy('end_date', 'asc')
             ->get();
 

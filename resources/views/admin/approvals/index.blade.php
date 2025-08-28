@@ -12,6 +12,9 @@
             </h1>
         </div>
 
+        {{-- フラッシュメッセージ --}}
+        <x-flash-message />
+
         {{-- 申請一覧テーブル --}}
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
