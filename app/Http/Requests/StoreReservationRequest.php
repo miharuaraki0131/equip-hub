@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Reservation;
+use Illuminate\Validation\Validator;
 
 class StoreReservationRequest extends FormRequest
 {
@@ -26,6 +28,45 @@ class StoreReservationRequest extends FormRequest
             'start_date'   => 'required|date|after_or_equal:today',
             'end_date'     => 'required|date|after_or_equal:start_date',
         ];
+    }
+
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            // start_dateとend_dateが有効な場合のみ、重複チェックを実行
+            $startDate = $this->input('start_date');
+            $endDate = $this->input('end_date');
+            $equipmentId = $this->input('equipment_id');
+
+            if ($startDate && $endDate && $equipmentId) {
+                $isReserved = Reservation::where('equipment_id', $equipmentId)
+                    ->where(function ($query) use ($startDate, $endDate) {
+                        $query->where(function ($q) use ($startDate, $endDate) {
+                            $q->where('start_date', '<=', $startDate)
+                                ->where('end_date', '>=', $startDate);
+                        })->orWhere(function ($q) use ($startDate, $endDate) {
+                            $q->where('start_date', '<=', $endDate)
+                                ->where('end_date', '>=', $endDate);
+                        })->orWhere(function ($q) use ($startDate, $endDate) {
+                            $q->where('start_date', '>=', $startDate)
+                                ->where('end_date', '<=', $endDate);
+                        });
+                    })
+                    ->exists();
+
+                if ($isReserved) {
+                    // もし予約が存在したら、エラーメッセージを追加
+                    $validator->errors()->add('start_date', '指定された期間には、すでに他の予約が入っています。');
+                }
+            }
+        });
     }
 
     /**

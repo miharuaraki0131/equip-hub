@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -71,5 +72,28 @@ class ChangeRequest extends Model
     {
         // 'source_model', 'source_id' を使って ApprovalFlow と繋がる
         return $this->morphOne(ApprovalFlow::class, 'source');
+    }
+
+    /**
+     * ステータスに応じたHTMLバッジを返すアクセサ
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute
+     */
+    protected function statusBadge(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                switch ($this->status) {
+                    case 10: // 承認待ち
+                        return '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">承認待ち</span>';
+                    case 20: // 承認済み
+                        return '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">承認済み</span>';
+                    case 30: // 却下
+                        return '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">却下</span>';
+                    default:
+                        return '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">不明</span>';
+                }
+            }
+        );
     }
 }

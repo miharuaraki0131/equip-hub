@@ -14,28 +14,48 @@ class EquipmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // ▼▼▼ 引数に Request $request を追加 ▼▼▼
-    public function index(Request $request)
-    {
-        // 1. ベースとなるクエリビルダを準備する
-        //    (これまで通り、N+1問題対策の with() もここに入れる)
-        $query = Equipment::with('category', 'division');
+   public function index(Request $request)
+{
+    $query = Equipment::with('category', 'division');
 
-        // 2. もしURLに 'status=available' が付いていたら、絞り込み条件を追加する
-        if ($request->query('status') === 'available') {
-            // statusカラムが 10 (利用可) のものだけに絞り込む
-            $query->where('status', 10);
-        }elseif ($request->query('status') === 'rent') {
-            // statusカラムが 20 (貸出中) のものだけに絞り込む
-            $query->where('status', 20);
-        }
-
-        // 3. 最終的なクエリに対して、並び順とページネーションを適用して、データを取得する
-        $equipments = $query->latest()->paginate(10);
-
-        // 4. ビューにデータを渡す
-        return view('equipments.index', compact('equipments'));
+    // --- 検索ロジック ---
+    if ($request->filled('keyword')) {
+        $keyword = '%' . $request->input('keyword') . '%';
+        $query->where(function ($q) use ($keyword) {
+            $q->where('name', 'like', $keyword)
+              ->orWhere('description', 'like', $keyword);
+        });
     }
+
+    // --- ステータス絞り込みロジック ---
+    if ($request->query('status') === 'available') {
+        $query->where('status', 10);
+    } elseif ($request->query('status') === 'rent') {
+        $query->where('status', 20);
+    }
+
+    // --- ソート（並び替え）ロジック ---
+    $sortBy = $request->input('sort_by', 'latest');
+    // ... switch文 ...
+    switch ($sortBy) {
+        case 'name_asc':
+            $query->orderBy('name', 'asc');
+            break;
+        case 'name_desc':
+            $query->orderBy('name', 'desc');
+            break;
+        case 'oldest':
+            $query->orderBy('created_at', 'asc');
+            break;
+        default: // 'latest'
+            $query->orderBy('created_at', 'desc');
+            break;
+    }
+
+    $equipments = $query->paginate(10)->withQueryString();
+
+    return view('equipments.index', compact('equipments'));
+}
 
     /**
      * Show the form for creating a new resource.

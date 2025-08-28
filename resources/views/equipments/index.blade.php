@@ -5,22 +5,56 @@
     {{-- =============================================== --}}
     <div class="bg-[var(--card-bg)] p-6 md:p-8 rounded-xl shadow-md">
 
-        {{-- ヘッダーエリア：タイトルと新規登録ボタン --}}
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-[var(--text-dark)] mb-4 sm:mb-0">
+        {{-- ヘッダーエリア：タイトルとアクション --}}
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+
+            {{-- 左側：ページタイトル --}}
+            <h1 class="text-2xl font-bold text-gray-800">
                 備品一覧
             </h1>
 
+            {{-- 右側：検索フォームと新規登録ボタンのグループ --}}
+            <div class="flex items-center gap-x-4">
 
-            {{-- 新規登録ボタン --}}
-            <a href="{{ route('equipments.create') }}" class="btn-primary w-full sm:w-auto">
-                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z">
-                    </path>
-                </svg>
-                <span>新規登録</span>
-            </a>
+                {{-- 検索・ソートフォーム --}}
+                <form action="{{ route('equipments.index') }}" method="GET" class="flex items-center gap-x-2">
+                    {{-- キーワード検索 --}}
+                    <div class="relative">
+                        <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="キーワード検索"
+                            class="form-input rounded-full pl-10 pr-4 py-2 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 transition text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    {{-- 並び替え --}}
+                    <div>
+                        <select name="sort_by" onchange="this.form.submit()"
+                            class="form-select rounded-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 transition text-sm">
+                            <option value="latest" {{ request('sort_by', 'latest') == 'latest' ? 'selected' : '' }}>新しい順
+                            </option>
+                            <option value="oldest" {{ request('sort_by') == 'oldest' ? 'selected' : '' }}>古い順</option>
+                            <option value="name_asc" {{ request('sort_by') == 'name_asc' ? 'selected' : '' }}>名前 (昇順)
+                            </option>
+                            <option value="name_desc" {{ request('sort_by') == 'name_desc' ? 'selected' : '' }}>名前 (降順)
+                            </option>
+                        </select>
+                    </div>
+                </form>
+
+                {{-- 新規登録ボタン --}}
+                <a href="{{ route('equipments.create') }}" class="btn-primary whitespace-nowrap">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z">
+                        </path>
+                    </svg>
+                    <span>新規登録</span>
+                </a>
+
+            </div>
         </div>
 
         {{-- 備品一覧テーブル --}}
@@ -61,18 +95,42 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $equipment->status_text }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex justify-end items-center gap-4">
-                                    <a href="{{ route('equipments.edit', $equipment) }}"
-                                        class="text-[var(--primary-color)] hover:text-blue-700">編集</a>
+                                <div class="flex justify-end items-center gap-x-4">
 
+                                    {{-- 編集ボタン --}}
+                                    <a href="{{ route('equipments.edit', $equipment) }}"
+                                        class="px-3 py-1 text-sm font-semibold text-white bg-gray-600 rounded-md shadow-sm hover:bg-gray-700 transition-colors">
+                                        編集
+                                    </a>
+
+                                    {{-- 削除ボタン --}}
                                     <form action="{{ route('equipments.destroy', $equipment) }}" method="POST"
                                         onsubmit="return confirm('本当に削除しますか？');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900">削除</button>
+                                        <button type="submit"
+                                            class="px-3 py-1 text-sm font-semibold text-white bg-red-600 rounded-md shadow-sm hover:bg-red-700 transition-colors">
+                                            削除
+                                        </button>
                                     </form>
-                                    <a href="{{ route('reservations.create', $equipment) }}"
-                                        class="text-[var(--primary-color)] hover:text-blue-700" >予約する</a>
+
+                                    {{-- 予約するボタン（状態に応じて動的に変化） --}}
+                                    @if ($equipment->status == 10)
+                                        {{-- 10: 利用可 --}}
+                                        {{-- ★★★ 活性状態のボタン ★★★ --}}
+                                        <a href="{{ route('reservations.create', $equipment) }}"
+                                            class="px-3 py-1 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 transition-colors">
+                                            予約する
+                                        </a>
+                                    @else
+                                        {{-- ★★★ 非活性状態のボタン ★★★ --}}
+                                        <button type="button"
+                                            class="px-3 py-1 text-sm font-semibold text-white bg-gray-300 rounded-md shadow-sm cursor-not-allowed"
+                                            disabled>
+                                            予約不可
+                                        </button>
+                                    @endif
+
                                 </div>
                             </td>
                         </tr>
@@ -80,12 +138,9 @@
                 </tbody>
             </table>
         </div>
-
         {{-- ページネーションリンク --}}
         <div class="mt-6">
             {{ $equipments->links() }}
         </div>
-
     </div>
-
 </x-portal-layout>

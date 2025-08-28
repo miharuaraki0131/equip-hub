@@ -8,20 +8,20 @@
         {{-- ヘッダーエリア：タイトル --}}
         <div class="flex justify-between items-center mb-6 border-b pb-4">
             <h1 class="text-2xl font-bold text-gray-800">
-               承認待ち一覧
+                承認待ち一覧
             </h1>
         </div>
 
         {{-- 申請一覧テーブル --}}
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg--50">
+                <thead class="bg-gray-200">
                     <tr>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             申請ID
                         </th>
-                         <th scope="col"
+                        <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             申請者
                         </th>
@@ -67,7 +67,8 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 {{-- 将来的に「申請取り消し」ボタンなどをここに設置 --}}
-                                <a href="{{ route('admin.approvals.show', $changeRequest) }}" class="text-indigo-600 hover:text-indigo-900">詳細</a>
+                                <a href="{{ route('admin.approvals.show', $changeRequest) }}"
+                                    class="px-3 py-1 text-sm font-semibold text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-700 transition-colors">詳細</a>
                             </td>
                         </tr>
                     @empty
