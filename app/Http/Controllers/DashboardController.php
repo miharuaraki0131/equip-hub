@@ -9,6 +9,7 @@ use App\Models\Reservation; // 貸出履歴を扱うReservationモデル
 use App\Models\Category;    // カテゴリ名を取得するためにCategoryモデル
 use Illuminate\Support\Facades\DB; // DBファサードを利用
 use Carbon\Carbon; // 日付操作のためにCarbonを利用
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -48,6 +49,15 @@ class DashboardController extends Controller
         $monthlyData = $monthlyRentals->values();
 
 
+        // 自分が貸出中の備品を取得
+        $rentedItems = Reservation::with('equipment')
+            ->where('user_id', Auth::id())
+            ->where('status', 30)
+            ->orderBy('end_date', 'asc')
+            ->get();
+
+
+
         // --- データをビューに渡す ---
         return view('dashboard', [
             // サマリーカード用
@@ -62,6 +72,9 @@ class DashboardController extends Controller
             // 月別トレンドグラフ用
             'monthlyLabels' => $monthlyLabels,
             'monthlyData' => $monthlyData,
+
+            // 貸出中の備品一覧
+            'rentedItems' => $rentedItems
         ]);
     }
 }

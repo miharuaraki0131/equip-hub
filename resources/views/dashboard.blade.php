@@ -25,7 +25,7 @@
                     </div>
                     <div class="min-w-0">
                         <h3 class="text-lg font-bold text-gray-800">承認待ち</h3>
-                        <p class="text-2xl lg:text-3xl font-black text-yellow-600">{{$pendingApprovalsCount}}件</p>
+                        <p class="text-2xl lg:text-3xl font-black text-yellow-600">{{ $pendingApprovalsCount }}件</p>
                     </div>
                 </a>
 
@@ -74,25 +74,59 @@
                             d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                             stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    現在貸出中の備品
+                    あなたが現在貸出中の備品
                 </h2>
-                <div
-                    class="bg-[var(--card-bg)]/50 border-2 border-dashed border-[var(--border-color)] rounded-xl p-8 lg:p-12 text-center">
-                    <svg class="mx-auto h-12 w-12 text-[var(--text-light)] mb-4" fill="none" stroke="currentColor"
-                        stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 4.5v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5c0-.621.504-1.125 1.125-1.125H6.75m10.5 1.5h-4.5V3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v1.5m-10.5 0a3.375 3.375 0 003.375 3.375h1.5a3.375 3.375 0 003.375-3.375"
-                            stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                    <h3 class="text-lg font-medium text-[var(--text-dark)] mb-2">現在、貸出中の備品はありません</h3>
-                    <p class="text-sm text-[var(--text-light)] mb-6">新しいツールを探しに行きませんか？</p>
-                    <a class="btn-primary inline-flex" href={{ route('equipments.index') }}>
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        備品一覧へ
-                    </a>
+
+                <div class="space-y-4">
+                    {{-- $rentedItems の中身を1件ずつループ処理する。もし1件もなければ @empty の中を実行する --}}
+                    @forelse ($rentedItems as $item)
+                        {{-- 貸出中の備品が1件以上あった場合の表示 --}}
+                        <div
+                            class="bg-white p-4 rounded-xl shadow-md flex items-center gap-4 hover:shadow-lg transition-shadow duration-300">
+                            {{-- 備品画像 --}}
+                            <img src="{{ $item->equipment->image_path ?? asset('images/placeholder.png') }}"
+                                {{-- 画像がなければ代替画像を表示 --}} alt="{{ $item->equipment->name }}"
+                                class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+
+                            {{-- 備品名と返却期限 --}}
+                            <div class="flex-grow min-w-0">
+                                <h3 class="font-bold text-gray-800 truncate">{{ $item->equipment->name }}</h3>
+                                <p class="text-sm text-gray-500">
+                                    返却期限:
+                                    <span
+                                        class="font-semibold text-red-600">{{ \Carbon\Carbon::parse($item->end_date)->format('Y年m月d日') }}</span>
+                                </p>
+                            </div>
+
+                            {{-- 詳細ページへのリンク --}}
+                            <a href="{{ route('equipments.show', $item->equipment) }}"
+                                class="btn-secondary-sm flex-shrink-0">
+                                詳細
+                            </a>
+                        </div>
+                    @empty
+                        {{-- 貸出中の備品が1件もなかった場合の表示（元のコードと同じ） --}}
+                        <div
+                            class="bg-[var(--card-bg)]/50 border-2 border-dashed border-[var(--border-color)] rounded-xl p-8 lg:p-12 text-center">
+                            <svg class="mx-auto h-12 w-12 text-[var(--text-light)] mb-4" fill="none"
+                                stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 4.5v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5c0-.621.504-1.125 1.125-1.125H6.75m10.5 1.5h-4.5V3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v1.5m-10.5 0a3.375 3.375 0 003.375 3.375h1.5a3.375 3.375 0 003.375-3.375"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <h3 class="text-lg font-medium text-[var(--text-dark)] mb-2">現在、貸出中の備品はありません</h3>
+                            <p class="text-sm text-[var(--text-light)] mb-6">新しいツールを探しに行きませんか？</p>
+                            <a class="btn-primary inline-flex" href={{ route('equipments.index') }}>
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
+                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                備品一覧へ
+                            </a>
+                        </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -183,17 +217,29 @@
             // DOMが完全に読み込まれたら、グラフの初期化処理を実行する
             document.addEventListener('DOMContentLoaded', function() {
 
+                // --- ここからが修正箇所 ---
+
+                // Controllerから渡された「本物のデータ」をJavaScriptの変数に変換
+                const categoryLabels = @json($categoryLabels);
+                const categoryData = @json($categoryData);
+                const monthlyLabels = @json($monthlyLabels);
+                const monthlyData = @json($monthlyData);
+
+                // --- ここまでが修正箇所 ---
+
+
                 // グラフの共通オプション
                 const commonOptions = {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
+                            // データが少ない場合でも凡例は非表示にしてスッキリさせる
                             display: false,
                         },
                         tooltip: {
                             bodyFont: {
-                                family: 'Noto Sans JP'
+                                family: 'Noto Sans JP' // フォントファミリーを指定（必要に応じて）
                             },
                             titleFont: {
                                 family: 'Noto Sans JP'
@@ -204,16 +250,15 @@
 
                 // 月別貸出トレンドグラフの初期化
                 const monthlyTrendElement = document.getElementById('monthlyTrendChart');
-                if (monthlyTrendElement) {
+                if (monthlyTrendElement && monthlyData.length > 0) { // データが存在する場合のみ描画
                     const monthlyTrendCtx = monthlyTrendElement.getContext('2d');
-                    // 'Chart' は、app.js で window.Chart にセットされたものが使われる
                     new Chart(monthlyTrendCtx, {
                         type: 'line',
                         data: {
-                            labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                            labels: monthlyLabels,
                             datasets: [{
                                 label: '貸出件数',
-                                data: [12, 19, 15, 25, 22, 30],
+                                data: monthlyData,
                                 borderColor: '#0d7ff2',
                                 backgroundColor: 'rgba(13, 127, 242, 0.1)',
                                 borderWidth: 2,
@@ -226,9 +271,11 @@
                             scales: {
                                 y: {
                                     beginAtZero: true,
+                                    // グラフの見た目をスッキリさせるため非表示
                                     display: false,
                                 },
                                 x: {
+                                    // グラフの見た目をスッキリさせるため非表示
                                     display: false,
                                 },
                             },
@@ -238,15 +285,22 @@
 
                 // カテゴリ別貸出比率グラフの初期化
                 const categoryElement = document.getElementById('categoryChart');
-                if (categoryElement) {
+                if (categoryElement && categoryData.length > 0) { // データが存在する場合のみ描画
                     const categoryCtx = categoryElement.getContext('2d');
                     new Chart(categoryCtx, {
                         type: 'doughnut',
                         data: {
-                            labels: ['PC', 'モニター', 'その他'],
+                            labels: categoryLabels,
                             datasets: [{
-                                data: [40, 35, 25],
-                                backgroundColor: ['#0d7ff2', '#10b981', '#f59e0b'],
+                                data: categoryData,
+                                backgroundColor: [
+                                    '#0d7ff2', // Blue
+                                    '#10b981', // Green
+                                    '#f59e0b', // Amber
+                                    '#6366f1', // Indigo
+                                    '#ec4899', // Pink
+                                    '#8b5cf6', // Violet
+                                ],
                                 borderWidth: 0,
                             }],
                         },
