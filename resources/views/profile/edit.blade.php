@@ -1,24 +1,27 @@
-<x-app-layout>
+<x-portal-layout :showHero="false">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
+            プロフィール編集
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            {{-- プロフィール情報更新フォーム --}}
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
 
+            {{-- パスワード更新フォーム --}}
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
+            {{-- アカウント削除フォーム --}}
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
@@ -26,4 +29,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-portal-layout>
