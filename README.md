@@ -79,14 +79,14 @@
 ## 5. ER図
 
 ![EquipHub ER図 Ver.2.0](./docs/er-diagram-v2.png)
-
+![alt text](image.png)
 ---
 
 ## 6. 環境構築・起動方法
 
 1.  リポジトリをクローン
     ```bash
-    git clone https://github.com/あなたのユーザー名/equip-hub.git
+    git clone https://github.com/miharuaraki0131/equip-hub.git
     cd equip-hub
     ```
 2.  `.env`ファイルの準備
