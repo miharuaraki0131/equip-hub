@@ -84,8 +84,8 @@
                         <div
                             class="bg-white p-4 rounded-xl shadow-md flex items-center gap-4 hover:shadow-lg transition-shadow duration-300">
                             {{-- 備品画像 --}}
-                            <img src="{{ $item->equipment->image_path ?? asset('images/placeholder.png') }}"
-                                {{-- 画像がなければ代替画像を表示 --}} alt="{{ $item->equipment->name }}"
+                            <img src="{{ $item->equipment->image_path ? \Storage::url($item->equipment->image_path) : asset('images/placeholder.png') }}"
+                                alt="{{ $item->equipment->name }}"
                                 class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
 
                             {{-- 備品名と返却期限 --}}
@@ -162,7 +162,7 @@
             </div>
 
             {{-- クイックアクション --}}
-            <div class="bg-[var(--card-bg)] p-6 rounded-xl shadow-md">
+            <div class="bg-white p-6 rounded-xl shadow-md">
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
                     <svg class="h-5 w-5 text-[var(--primary-color)]" fill="none" stroke="currentColor"
                         stroke-width="2" viewBox="0 0 24 24">
@@ -171,28 +171,24 @@
                     クイックアクション
                 </h3>
                 <div class="space-y-3">
-                    <a href="#"
+
+                    {{-- =============================================== --}}
+                    {{-- 一般ユーザー向けアクション (管理者も表示される) --}}
+                    {{-- =============================================== --}}
+
+                    <a href="{{ route('equipments.index') }}"
                         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
                         <div class="bg-blue-100 p-2 rounded-lg group-hover:bg-blue-200 transition-colors">
                             <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
                                 viewBox="0 0 24 24">
-                                <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-medium text-[var(--text-dark)]">新規予約</span>
-                    </a>
-                    <a href="#"
-                        class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
-                        <div class="bg-green-100 p-2 rounded-lg group-hover:bg-green-200 transition-colors">
-                            <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor"
-                                stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
+                                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
                                     stroke-linejoin="round" />
                             </svg>
                         </div>
-                        <span class="text-sm font-medium text-[var(--text-dark)]">承認処理</span>
+                        <span class="text-sm font-medium text-gray-700">備品を探す・予約する</span>
                     </a>
-                    <a href="#"
+
+                    <a href="{{ route('my.reservations.index') }}"
                         class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
                         <div class="bg-purple-100 p-2 rounded-lg group-hover:bg-purple-200 transition-colors">
                             <svg class="h-4 w-4 text-purple-600" fill="none" stroke="currentColor"
@@ -202,8 +198,42 @@
                                     stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
-                        <span class="text-sm font-medium text-[var(--text-dark)]">レポート確認</span>
+                        <span class="text-sm font-medium text-gray-700">自分の予約履歴</span>
                     </a>
+
+
+                    {{-- =============================================== --}}
+                    {{-- 管理者専用アクション --}}
+                    {{-- =============================================== --}}
+                    @can('admin-only')
+                        {{-- 区切り線 --}}
+                        <hr class="my-3">
+
+                        <a href="{{ route('admin.approvals.index') }}"
+                            class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                            <div class="bg-green-100 p-2 rounded-lg group-hover:bg-green-200 transition-colors">
+                                <svg class="h-4 w-4 text-green-600" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">申請の承認処理</span>
+                        </a>
+
+                        <a href="{{ route('admin.reservations.index') }}"
+                            class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                            <div class="bg-yellow-100 p-2 rounded-lg group-hover:bg-yellow-200 transition-colors">
+                                <svg class="h-4 w-4 text-yellow-600" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
+                                        stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700">貸出・返却処理</span>
+                        </a>
+                    @endcan
+
                 </div>
             </div>
         </aside>

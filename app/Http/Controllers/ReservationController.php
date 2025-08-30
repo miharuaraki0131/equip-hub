@@ -10,6 +10,7 @@ use App\Models\Equipment;
 use Illuminate\Support\Facades\Auth;
 
 
+
 class ReservationController extends Controller
 {
     /**
@@ -50,9 +51,9 @@ class ReservationController extends Controller
 
         // 申請完了後は、マイ予約一覧などにリダイレクトするのが親切
         return redirect()->route('my.reservations.index')->with('success', '予約申請を送信しました。');
-
-
     }
+
+
 
 
     /**
@@ -89,11 +90,11 @@ class ReservationController extends Controller
 
     public function myIndex()
     {
-         $myChangeRequests = ChangeRequest::where('user_id', Auth::id())
-        ->where('type', 'create_reservation')
-        ->latest()
-        ->get();
+        $myChangeRequests = ChangeRequest::where('user_id', Auth::id())
+            ->where('type', 'create_reservation')
+            ->latest()
+            ->get();
 
-    return view('reservations.my-index', compact('myChangeRequests'));
+        return view('reservations.my-index', compact('myChangeRequests'));
     }
 }

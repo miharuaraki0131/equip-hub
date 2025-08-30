@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ApprovalFlow;
+// use App\Models\ApprovalFlow; // ← [削除] 不要になったuse文
 use App\Models\Category;
 use App\Models\ChangeRequest;
 use App\Models\Division;
@@ -25,53 +25,42 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
-            'is_admin' => true,
+            'is_admin' => 1, // trueではなく1に修正
         ]);
-        User::factory(20)->create();
-
+        User::factory()->create([
+            'name' => 'General User',
+            'email' => 'user@example.com',
+            'is_admin' => 0, // falseではなく0に修正
+        ]);
+        User::factory(18)->create(); // 残りのユーザーを作成
 
 
         // ----- 2. 現在の備品状況（確定済みデータ）の作成 -----
         $this->command->info('Seeding current equipments & reservations...');
         Equipment::factory(50)->create();
-        Reservation::factory(100)->create(); // 過去の貸出履歴を100件作成
+        Reservation::factory(100)->create();
 
 
+        // ----- 3. 予約申請（承認待ち）のダミーデータ作成 -----
+        $this->command->info('Seeding pending reservation requests...');
+        // ユーザーと備品をランダムに選んで、5件の「承認待ち」予約申請を作成する
+        for ($i = 0; $i < 5; $i++) {
+            $user = User::inRandomOrder()->first();
+            $equipment = Equipment::where('status', 10)->inRandomOrder()->first(); // 利用可能な備品から選ぶ
 
-        // ----- 3. 備品登録申請（承認待ち）のダミーデータ作成 -----
-        $this->command->info('Seeding pending equipment-create requests...');
-        ChangeRequest::factory(5)->make([ // make()でメモリ上にのみインスタンスを作成
-            'target_model' => Equipment::class,
-            'target_id' => null,
-            'type' => 'create',
-            'payload_before' => null,
-            'payload_after' => fn() => Equipment::factory()->make()->toArray(),
-        ])->each(function ($cr) {
-            $cr->save(); // まずChangeRequestを保存
-            ApprovalFlow::factory()->create([ // 次にそれに紐づく承認フローを作成
-                'source_model' => ChangeRequest::class,
-                'source_id' => $cr->id,
-                'status' => 10, // 承認待ち
-            ]);
-        });
-
-        // ----- 4. 備品編集申請（承認済み）のダミーデータ作成 -----
-        $this->command->info('Seeding approved equipment-update requests...');
-        $targetEquipment = Equipment::inRandomOrder()->first();
-        ChangeRequest::factory(3)->make([
-            'target_model' => Equipment::class,
-            'target_id' => $targetEquipment->id,
-            'type' => 'update',
-            'payload_before' => ['status' => $targetEquipment->status],
-            'payload_after' => ['status' => 30], // 修理中(30)にする申請
-        ])->each(function ($cr) {
-            $cr->save();
-            ApprovalFlow::factory()->create([
-                // ★追加: statusを「承認済み」で上書きする
-                'status' => 20, // 20:承認済
-                'source_model' => ChangeRequest::class,
-                'source_id' => $cr->id,
-            ]);
-        });
+            if ($user && $equipment) {
+                ChangeRequest::factory()->create([
+                    'user_id' => $user->id,
+                    'target_model' => Equipment::class,
+                    'target_id' => $equipment->id,
+                    'type' => 'create_reservation',
+                    'status' => 10, // 10: 承認待ち
+                    'payload_after' => json_encode([
+                        'start_date' => now()->addDays(rand(1, 5))->format('Y-m-d'),
+                        'end_date' => now()->addDays(rand(6, 10))->format('Y-m-d'),
+                    ]),
+                ]);
+            }
+        }
     }
 }

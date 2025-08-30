@@ -43,6 +43,9 @@ Route::middleware('auth')->group(function () {
         // 貸出実行処理
         Route::post('/reservations/{reservation}/lend', [AdminReservationController::class, 'lend'])->name('reservations.lend');
 
+        // 返却処理
+        Route::post('/reservations/{reservation}/return', [AdminReservationController::class, 'return'])->name('reservations.return');
+
 
         Route::prefix('approvals')->name('approvals.')->group(function () {
             Route::get('/', [ApprovalController::class, 'index'])->name('index');

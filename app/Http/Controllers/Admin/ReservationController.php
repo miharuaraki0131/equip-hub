@@ -8,20 +8,35 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+
 class ReservationController extends Controller
 {
     /**
-     * 承認済み（貸出待ち）の予約一覧を表示する
+     * 貸出待ち、および貸出中の予約一覧を表示する
      */
     public function index()
     {
-        // statusが20（承認済/貸出待）の予約を、関連するユーザーと備品情報と共に取得
+        // statusが20（貸出待ち）の予約を取得
         $pendingLendReservations = Reservation::with(['user', 'equipment'])
-            ->where('status', 20) // 貸出待ちの予約に絞る
-            ->orderBy('start_date', 'asc') // 貸出開始日が近い順に並べる
-            ->paginate(10); // 10件ごとにページネーション
+            ->where('status', 20)
+            ->whereHas('user')
+            ->whereHas('equipment')
+            ->orderBy('start_date', 'asc')
+            ->get(); // paginateではなくgetに変更
 
-        return view('admin.reservations.index', compact('pendingLendReservations'));
+        // statusが30（貸出中）の予約を取得
+        $lendingReservations = Reservation::with(['user', 'equipment'])
+            ->where('status', 30)
+            ->whereHas('user')
+            ->whereHas('equipment')
+            ->orderBy('end_date', 'asc')
+            ->get();
+
+        // 2種類のデータを、連想配列としてビューに渡す
+        return view('admin.reservations.index', [
+            'pendingLendReservations' => $pendingLendReservations,
+            'lendingReservations' => $lendingReservations,
+        ]);
     }
 
     /**
@@ -48,5 +63,34 @@ class ReservationController extends Controller
         });
 
         return redirect()->back()->with('success', $reservation->equipment->name . ' を ' . $reservation->user->name . ' に貸し出しました。');
+    }
+
+    /**
+     * 備品を返却済みにする処理
+     *
+     * @param  \App\Models\Reservation  $reservation
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function return(Reservation $reservation)
+    {
+        // すでに返却済みなどの場合は、何もしない（二重実行防止）
+        if ($reservation->status !== 30) {
+            return redirect()->back()->with('error', 'この予約は貸出中の状態ではありません。');
+        }
+
+        // トランザクション処理で、データの整合性を担保する
+        DB::transaction(function () use ($reservation) {
+            // 1. 予約テーブルのステータスを「返却済」に更新し、返却日時を記録
+            $reservation->status = 40; // 40: 返却済
+            $reservation->returned_at = Carbon::now();
+            $reservation->save();
+
+            // 2. 備品マスタのステータスを「利用可」に戻す
+            $equipment = $reservation->equipment;
+            $equipment->status = 10; // 10: 利用可
+            $equipment->save();
+        });
+
+        return redirect()->back()->with('success', $reservation->equipment->name . 'が返却されました。');
     }
 }

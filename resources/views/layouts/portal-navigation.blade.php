@@ -41,6 +41,7 @@
                         <div class="rounded-md ring-1 ring-black ring-opacity-5 py-1 bg-white">
                             <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ユーザー管理</a>
                             <a href="{{ route('admin.approvals.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">承認待ち一覧</a>
+                            <a href="{{ route('admin.reservations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">貸出・返却管理</a>
                         </div>
                     </div>
                 </div>
